@@ -39,3 +39,11 @@
 
 # debug information files
 *.dwo
+
+#.vs, .vscode, .git
+.vs/
+.vscode/
+.git/
+
+# everything else in */out
+GoGraph/out
