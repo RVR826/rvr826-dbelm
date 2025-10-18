@@ -1,4 +1,4 @@
-﻿#include "utils/Graph.hpp"
+﻿#include "utils/graph.hpp"
 
 using Edge = GoGraph::Utils::Edge;
 using WeightedEdge = GoGraph::Utils::WeightedEdge;
@@ -11,8 +11,10 @@ int main()
 
 	GoGraph::Utils::Graph<5, 6> g2{ weightedEdges };
 
-	std::cout << "vc: " << g2.vertexCount() << ", ec: " << g2.edgeCount() << "\n";
-	g2.print();
+	// std::cout << "vc: " << g2.vertexCount() << ", ec: " << g2.edgeCount() << "\n";
+	// g2.print();
+
+	auto part = g2.partition(2);
 
 	return 0;
 }

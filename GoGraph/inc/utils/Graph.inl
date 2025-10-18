@@ -1,4 +1,4 @@
-#include "Graph.hpp"
+#include "graph.hpp"
 
 namespace GoGraph::Utils
 {
@@ -11,6 +11,26 @@ namespace GoGraph::Utils
 		, m_edgeWeights{}
 	{
 		buildAdjacencies(f_edges);
+	}
+
+	template<int VertexCount, int EdgeCount>
+	std::array<int, VertexCount> Graph<VertexCount, EdgeCount>::partition(int parts) const {
+		idx_t n = VertexCount;
+		idx_t ncon = 1;
+		idx_t nparts = parts;
+		idx_t objval;
+
+		// CSR arrays must be idx_t
+		std::array<idx_t, VertexCount + 1> xadj{ m_rowPtr };
+		std::array<idx_t, EdgeCount> adjncy{ m_colIdx };
+
+		std::array<int, VertexCount> part{};
+
+		METIS_PartGraphKway(&n, &ncon, xadj.data(), adjncy.data(),
+			nullptr, nullptr, nullptr, &nparts,
+			nullptr, nullptr, nullptr, &objval, part.data());
+
+		return part;
 	}
 
 	template<int VertexCount, int EdgeCount>

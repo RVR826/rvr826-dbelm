@@ -34,8 +34,9 @@ set(METIS_BUILD_SHARED FALSE CACHE BOOL "Build METIS as static library" FORCE)
 set(METIS_INSTALL FALSE CACHE BOOL "Disable METIS installation" FORCE)
 set(GKLIB_INSTALL FALSE CACHE BOOL "Disable GKlib installation" FORCE)
 
-# Add subdirectories (this will also build GKlib)
+# Add subdirectories
 add_subdirectory(${METIS_ROOT})
+add_subdirectory(${GKLIB_PATH})
 
 # -------------------------------------------------
 # Project sources and includes
@@ -54,6 +55,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 # Link libraries
 # -------------------------------------------------
 target_link_libraries(${PROJECT_NAME} PRIVATE
-    metis
+    metis 
+    GKlib
 )
 

@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <array>
 #include <iostream>
+#include <metis.h>
 
 namespace GoGraph::Utils
 {
@@ -47,6 +48,8 @@ public:
 		return EdgeCount;
 	}
 
+	std::array<int, VertexCount> partition(int parts) const;
+
 	void print() const;
 
 	static constexpr int k_invalidVertex{ -1 };
@@ -84,8 +87,7 @@ private:
 	std::array<int, VertexCount + 1> m_colPtr;
 	std::array<int, EdgeCount> m_colIdx;
 	std::array<float, EdgeCount> m_edgeWeights;
-
 };
 } // namespace GoGraph::Utils
 
-#include "Graph.inl"
+#include "graph.inl"
