@@ -1,93 +1,89 @@
 #pragma once
 
 #include <algorithm>
-#include <array>
 #include <iostream>
 #include <metis.h>
+#include "graph_parts.hpp"
 
 namespace GoGraph::Utils
 {
 
-struct Edge
-{
-	Edge(int f_from, int f_to)
-		: m_from{f_from}
-		, m_to{f_to} { }
-
-
-	virtual ~Edge() {}
-	
-	int m_from;
-	int m_to;
-};
-
-struct WeightedEdge : public Edge
-{
-	WeightedEdge(int f_from, int f_to, float f_weight = 0.f)
-		: Edge(f_from, f_to)
-		, m_weight{f_weight} { }
-
-	float m_weight;
-};
-
-template<int VertexCount, int EdgeCount>
-class Graph 
-{
-using EdgeArray = std::array<WeightedEdge, EdgeCount>;
-
-public:
-	Graph(const EdgeArray& f_edges);
-
-	inline int vertexCount() const
+	template<int VertexCount, int EdgeCount>
+	class Graph 
 	{
-		return VertexCount;
-	}	
-	
-	inline int edgeCount() const
-	{
-		return EdgeCount;
-	}
+		using EdgeArray = std::array<WeightedEdge, EdgeCount>;
 
-	std::array<int, VertexCount> partition(int parts) const;
+	public:
+		Graph(const EdgeArray& f_edges);
 
-	void print() const;
-
-	static constexpr int k_invalidVertex{ -1 };
-
-private:
-	void buildAdjacencies(const EdgeArray& f_edges);
-
-	inline int getDegree(int v) const
-	{
-		return getInDegree(v) + getOutDegree(v);
-	}
-
-	inline int getInDegree(int v) const
-	{
-		if (v < 0 || v >= VertexCount)
+		inline GraphIterator<VertexCount, EdgeCount> begin() const
 		{
-			return k_invalidVertex;
+			std::array<int, VertexCount> processOrder{};
+			for (int i = 0; i < VertexCount; i++)
+			{
+				processOrder[i] = i;
+			}
+
+			return GraphIterator<VertexCount, EdgeCount>{
+				processOrder, & m_rowPtr, & m_rowIdx, & m_colPtr, & m_colIdx, & m_edgeWeights
+			};
 		}
 
-		return m_colPtr[v + 1] - m_colPtr[v];
-	}
-
-	inline int getOutDegree(int v) const
-	{
-		if (v < 0 || v >= VertexCount)
+		inline GraphIterator<VertexCount, EdgeCount> end() const
 		{
-			return k_invalidVertex;
+			return GraphIterator<VertexCount, EdgeCount>();
 		}
 
-		return m_rowPtr[v + 1] - m_rowPtr[v];
-	}
+		inline int vertexCount() const
+		{
+			return VertexCount;
+		}	
+	
+		inline int edgeCount() const
+		{
+			return EdgeCount;
+		}
 
-	std::array<int, VertexCount + 1> m_rowPtr;
-	std::array<int, EdgeCount> m_rowIdx;
-	std::array<int, VertexCount + 1> m_colPtr;
-	std::array<int, EdgeCount> m_colIdx;
-	std::array<float, EdgeCount> m_edgeWeights;
-};
+		std::array<int, VertexCount> partition(int parts) const;
+
+		void print() const;
+
+		static constexpr int k_invalidVertex{ -1 };
+
+	private:
+		void buildAdjacencies(const EdgeArray& f_edges);
+
+		inline int getDegree(int v) const
+		{
+			return getInDegree(v) + getOutDegree(v);
+		}
+
+		inline int getInDegree(int v) const
+		{
+			if (v < 0 || v >= VertexCount)
+			{
+				return k_invalidVertex;
+			}
+
+			return m_colPtr[v + 1] - m_colPtr[v];
+		}
+
+		inline int getOutDegree(int v) const
+		{
+			if (v < 0 || v >= VertexCount)
+			{
+				return k_invalidVertex;
+			}
+
+			return m_rowPtr[v + 1] - m_rowPtr[v];
+		}
+
+		std::array<int, VertexCount + 1> m_rowPtr;
+		std::array<int, EdgeCount> m_rowIdx;
+		std::array<int, VertexCount + 1> m_colPtr;
+		std::array<int, EdgeCount> m_colIdx;
+		std::array<float, EdgeCount> m_edgeWeights;
+	};
 } // namespace GoGraph::Utils
 
 #include "graph.inl"

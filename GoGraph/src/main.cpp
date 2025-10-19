@@ -11,10 +11,15 @@ int main()
 
 	GoGraph::Utils::Graph<5, 6> g2{ weightedEdges };
 
-	// std::cout << "vc: " << g2.vertexCount() << ", ec: " << g2.edgeCount() << "\n";
-	// g2.print();
+	//std::cout << "vc: " << g2.vertexCount() << ", ec: " << g2.edgeCount() << "\n";
+	//g2.print();
 
-	auto part = g2.partition(2);
+	//auto part = g2.partition(2);
+
+	for (auto it = g2.begin(); it != g2.end(); ++it)
+	{
+		std::cout << it->m_v << "\n";
+	}
 
 	return 0;
 }
