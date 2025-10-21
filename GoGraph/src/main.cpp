@@ -1,25 +1,23 @@
 ﻿#include "utils/graph.hpp"
+#include "utils/algorithms.hpp"
 
-using Edge = GoGraph::Utils::Edge;
 using WeightedEdge = GoGraph::Utils::WeightedEdge;
 
 int main()
 {
-	std::array<WeightedEdge, 6> weightedEdges = {
-		WeightedEdge{0, 1, 0.3f}, WeightedEdge{0, 2, 1.1f}, WeightedEdge{1, 2, 0.1f}, WeightedEdge{2, 3, 2.f}, WeightedEdge{3, 4, 1.25f}, WeightedEdge{4, 1, 0.67f}
-	};
+	std::array<WeightedEdge, 7> edges = { {
+		{0, 1, 1.f},  // a → b
+		{0, 4, 4.f},  // a → e
+		{1, 2, 6.f},  // b → c
+		{1, 4, 1.f},  // b → e
+		{4, 3, 2.f},  // e → d
+		{3, 2, 1.f},  // d → c
+		{2, 4, 4.f}   // c → e
+	}};
 
-	GoGraph::Utils::Graph<5, 6> g2{ weightedEdges };
+	GoGraph::Utils::Graph<5, 7> g{ edges };
 
-	//std::cout << "vc: " << g2.vertexCount() << ", ec: " << g2.edgeCount() << "\n";
-	//g2.print();
-
-	//auto part = g2.partition(2);
-
-	for (auto it = g2.begin(); it != g2.end(); ++it)
-	{
-		std::cout << it->m_v << "\n";
-	}
+	GoGraph::Utils::sssp_async(g.begin(), g.end(), 0, true);
 
 	return 0;
 }

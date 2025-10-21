@@ -24,8 +24,13 @@ namespace GoGraph::Utils
 				processOrder[i] = i;
 			}
 
+			return begin(processOrder);
+		}
+
+		inline GraphIterator<VertexCount, EdgeCount> begin(const std::array<int, VertexCount>& f_processOrder) const
+		{
 			return GraphIterator<VertexCount, EdgeCount>{
-				processOrder, & m_rowPtr, & m_rowIdx, & m_colPtr, & m_colIdx, & m_edgeWeights
+				f_processOrder, &m_rowPtr, &m_rowIdx, &m_colPtr, &m_colIdx, &m_edgeWeights
 			};
 		}
 
