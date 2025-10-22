@@ -1,7 +1,6 @@
 #pragma once
 
 #include <limits>
-#include <cmath>
 #include "graph.hpp"
 
 namespace GoGraph::Utils
@@ -19,38 +18,33 @@ namespace GoGraph::Utils
         dist.fill(std::numeric_limits<float>::infinity());
         dist[f_source] = 0.f;
 
-        int iteration{ 1 };
+        int iteration{ 0 };
 
-        for (auto it = f_begin; it != f_end; ++it)
+        bool changed{ true };
+        for (int i = 0; i < f_maxIterations && changed; ++i)
         {
             if (f_isLoggingActive)
             {
-                std::cout << "[sssp_async] Currently: it = " << iteration << "\n";
+                std::cout << "[sssp_async] Currently: iteration #" << i + 1 << "\n";
             }
-
-            bool changed{ false };
-            const float du = dist[it->m_v];
-            if (du == std::numeric_limits<float>::infinity())
-                continue;
-
-            for (const auto& [w, u, v] : it->m_outEdges)
-            {
-                const float newDist = du + w;
-
-                if (newDist < dist[v])
+            
+            changed = false;
+            for (auto it = f_begin; it != f_end; ++it)
+            {                
+                for (const auto& [w, u, v] : it->m_inEdges)
                 {
-                    if (f_isLoggingActive)
+                    const auto du = dist[u];
+                    const auto dv = dist[v];
+                    if (du + w < dv)
                     {
-                        std::cout << "[sssp_async] SSSP changed from " << dist[v] << " to " << newDist << "\n";
+                        if (f_isLoggingActive)
+                        {
+                            std::cout << "[sssp_async] SP changed for " << v << " from " << dist[v] << " to " << du + w << " based on " << u << "\n";
+                        }
+                        dist[v] = du + w;
+                        changed = true;
                     }
-                    dist[v] = newDist;
-                    changed = true;
                 }
-            }
-
-            if (f_isLoggingActive)
-            {
-                std::cout << "[sssp_async] ------------- \n";
             }
 
             if (changed)
@@ -62,13 +56,49 @@ namespace GoGraph::Utils
         if (f_isLoggingActive)
         {
             std::cout << "[sssp_async] Converged in " << iteration << " iterations.\n";
-            std::cout << "[sssp_async] Shortest paths:\n";
-            for(auto i = 0; i < VertexCount; ++i)
-            {
-                std::cout << "[sssp_async] " << f_source << " --" << dist[i] << "--> " << i << "\n";
-            }
         }
 
         return dist;
+    }
+
+    template<int VertexCount>
+    int p(int u, const std::array<int, VertexCount>& f_processOrder)
+    {
+        for (auto i = 0; i < VertexCount; i++)
+        {
+            if (u == f_processOrder[i])
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    template<int VertexCount, int EdgeCount>
+    int m(const Graph<VertexCount, EdgeCount>& f_g)
+    {
+        std::array<int, VertexCount> processOrder{};
+        for (auto i = 0; i < VertexCount; ++i)
+        {
+            processOrder[i] = i;
+        }
+
+        return m(f_g, processOrder);
+    }
+
+    template<int VertexCount, int EdgeCount>
+    int m(const Graph<VertexCount, EdgeCount>& f_g, const std::array<int, VertexCount>& f_processOrder)
+    {
+        int m{ 0 };
+        for (auto it = f_g.begin(f_processOrder); it != f_g.end(); ++it)
+        {
+            for (const auto& [_, u, v] : it->m_outEdges)
+            {
+                m += p(u, f_processOrder) < p(v, f_processOrder) ? 1 : 0;
+            }
+        }
+
+        return m;
     }
 }

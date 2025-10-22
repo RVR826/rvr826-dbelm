@@ -8,7 +8,7 @@ namespace GoGraph::Utils
 		, m_rowIdx{}
 		, m_colPtr{}
 		, m_colIdx{}
-		, m_edgeWeights{}
+		, m_weightLookup{}
 	{
 		buildAdjacencies(f_edges);
 	}
@@ -57,7 +57,7 @@ namespace GoGraph::Utils
 			m_colIdx[rowPos] = e.m_to;
 			m_rowIdx[tempColPtr[e.m_to]++] = e.m_from;
 
-			m_edgeWeights[rowPos] = e.m_weight;
+			m_weightLookup[makeEdgeKey(e.m_from, e.m_to)] = e.m_weight;
 		}
 	}
 

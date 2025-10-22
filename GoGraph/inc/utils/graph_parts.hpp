@@ -29,14 +29,16 @@ namespace GoGraph::Utils
 
 	struct Vertex
 	{
-		Vertex(int f_v, std::vector<WeightedEdge>& f_outEdges)
+		Vertex(int f_v, std::vector<WeightedEdge>& f_outEdges, std::vector<WeightedEdge>& f_inEdges)
 			: m_v{f_v}
-			, m_outEdges{f_outEdges} { }
+			, m_outEdges{f_outEdges}
+			, m_inEdges{f_inEdges} { }
 
 		Vertex() = default;
 
 		int m_v;
 		std::vector<WeightedEdge> m_outEdges;
+		std::vector<WeightedEdge> m_inEdges;
 	};
 
 	template<int VertexCount, int EdgeCount>
@@ -50,7 +52,7 @@ namespace GoGraph::Utils
 			const std::array<int, EdgeCount>* f_rowIdx,
 			const std::array<int, VertexCount + 1>* f_colPtr,
 			const std::array<int, EdgeCount>* f_colIdx,
-			const std::array<float, EdgeCount>* f_edgeWeights);
+			const std::unordered_map<std::int64_t, float>* f_weightLookup);
 
 		inline const Vertex* operator->() const
 		{
@@ -79,7 +81,7 @@ namespace GoGraph::Utils
 		const std::array<int, EdgeCount>* m_rowIdx;
 		const std::array<int, VertexCount + 1>* m_colPtr;
 		const std::array<int, EdgeCount>* m_colIdx;
-		const std::array<float, EdgeCount>* m_edgeWeights;
+		const std::unordered_map<std::int64_t, float>* m_weightLookup;
 	};
 }
 

@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <unordered_map>
 #include <metis.h>
 #include "graph_parts.hpp"
 
@@ -30,7 +31,7 @@ namespace GoGraph::Utils
 		inline GraphIterator<VertexCount, EdgeCount> begin(const std::array<int, VertexCount>& f_processOrder) const
 		{
 			return GraphIterator<VertexCount, EdgeCount>{
-				f_processOrder, &m_rowPtr, &m_rowIdx, &m_colPtr, &m_colIdx, &m_edgeWeights
+				f_processOrder, &m_rowPtr, &m_rowIdx, &m_colPtr, &m_colIdx, &m_weightLookup
 			};
 		}
 
@@ -52,6 +53,11 @@ namespace GoGraph::Utils
 		std::array<int, VertexCount> partition(int parts) const;
 
 		void print() const;
+
+		static inline std::int64_t makeEdgeKey(int u, int v)
+		{
+			return (static_cast<std::int64_t>(u) << 32) | static_cast<unsigned int>(v);
+		}
 
 		static constexpr int k_invalidVertex{ -1 };
 
@@ -87,7 +93,7 @@ namespace GoGraph::Utils
 		std::array<int, EdgeCount> m_rowIdx;
 		std::array<int, VertexCount + 1> m_colPtr;
 		std::array<int, EdgeCount> m_colIdx;
-		std::array<float, EdgeCount> m_edgeWeights;
+		std::unordered_map<std::int64_t, float> m_weightLookup;
 	};
 } // namespace GoGraph::Utils
 
